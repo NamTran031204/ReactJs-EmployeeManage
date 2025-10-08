@@ -20,4 +20,3 @@ export function createEmployeeCard(initial: Partial<EmployeeCard>): EmployeeCard
     }
 }
 
-export default EmployeeCard;
