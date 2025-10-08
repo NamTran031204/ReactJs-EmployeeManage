@@ -1,4 +1,4 @@
-import type {EmployeeCard} from "./EmployeeCard.ts";
+import type {EmployeeCard} from "../dto/EmployeeCard.ts";
 
 function EmployeeTable({employees}: {employees:EmployeeCard[]}) {
     return (

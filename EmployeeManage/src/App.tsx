@@ -1,11 +1,11 @@
 
 import './App.css'
 import EmployeeList from "./components/EmployeeList.tsx";
-import type {EmployeeCard} from "./components/EmployeeCard.ts";
-import {EmployeeListProps} from "./components/EmployeeListProps.ts";
+import type {EmployeeCard} from "./dto/EmployeeCard.ts";
+import {EMPLOYEE_DATA_BASE} from "./components/EMPLOYEE_DATA_BASE.ts";
 import EmployeeTable from "./components/EmployeeTable.tsx";
 import * as React from "react";
-import searchService from "./components/search/Search.ts";
+import searchService from "./components/search/utils.ts";
 import SearchEngine from "./components/search/SearchEngine.tsx";
 import FilterByTitle from "./components/filter/FilterByTitle.tsx";
 
@@ -22,7 +22,7 @@ function App() {
     const [hasSearched, setHasSearched] = React.useState<boolean>(false);
     const [filtered, setFiltered] = React.useState<string>("Tất cả");
 
-    const employeeList: EmployeeCard[] = EmployeeListProps;
+    const employeeList: EmployeeCard[] = EMPLOYEE_DATA_BASE;
     const finalEmployeeList:EmployeeCard[] = (hasSearched ? foundObject : employeeList)
         .filter((employee: EmployeeCard) => {
             return filtered===''||filtered === "Tất cả"?true:employee.title == filtered})

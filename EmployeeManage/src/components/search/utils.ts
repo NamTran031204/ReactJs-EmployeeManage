@@ -1,5 +1,5 @@
-import type {EmployeeCard} from "../EmployeeCard.ts";
-import {EmployeeListProps} from "../EmployeeListProps.ts"
+import type {EmployeeCard} from "../../dto/EmployeeCard.ts";
+import {EMPLOYEE_DATA_BASE} from "../EMPLOYEE_DATA_BASE.ts"
 
 export type SearchTree = Map<string, EmployeeCard[]>
 
@@ -15,7 +15,7 @@ function createNode(): RadixTreeNode {
     }
 }
 
-export class Search {
+export class Utils {
 
     public searchTree: RadixTreeNode = createNode();
 
@@ -31,13 +31,12 @@ export class Search {
 
     init () {
         const tree: RadixTreeNode = createNode();
-        const employeeList: EmployeeCard[] = EmployeeListProps;
+        const employeeList: EmployeeCard[] = EMPLOYEE_DATA_BASE;
         tree.employees = [...employeeList];
 
         for (const employee of employeeList) {
             const ten = this.normalizeText(employee.name);
             const cacTu = ten.split(/\s+/).filter(tu => tu.length > 0);
-            // console.log(cacTu);
 
             for (const tu of cacTu) {
                 let currentNode = tree;
@@ -60,7 +59,7 @@ export class Search {
 
 
     findName (name: string): EmployeeCard[] {
-        if (!name || name.trim() === '') return EmployeeListProps;
+        if (!name || name.trim() === '') return EMPLOYEE_DATA_BASE;
         let res: EmployeeCard[] = [];
 
         const normalizedName = (this.normalizeText(name)).split(/\s+/).filter(tu => tu.length > 0);
@@ -109,5 +108,5 @@ export class Search {
 
 }
 
-const searchService = new Search();
+const searchService = new Utils();
 export default searchService;
