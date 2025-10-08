@@ -57,6 +57,29 @@ export class Utils {
         this.searchTree = tree;
     }
 
+    addEmployeeToTree (employee: EmployeeCard){
+        const name = employee.name;
+        if (!name || name.trim() === '') return;
+        const normalizedName = (this.normalizeText(name)).split(/\s+/).filter(tu => tu.length > 0);
+
+        let tree = this.searchTree;
+        tree.employees.push(employee);
+
+        for (const tu of normalizedName) {
+            tree = this.searchTree;
+            for (const char of tu) {
+                if (tree.children.has(char)){
+                    tree = tree.children.get(char)!;
+                    tree.employees.push(employee);
+                }else {
+                    tree.children.set(char, createNode());
+                    tree = tree.children.get(char)!;
+                    tree.employees.push(employee);
+                }
+            }
+        }
+    }
+
 
     findName (name: string): EmployeeCard[] {
         if (!name || name.trim() === '') return EMPLOYEE_DATA_BASE;
