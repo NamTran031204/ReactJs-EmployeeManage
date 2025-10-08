@@ -77,7 +77,7 @@ function App() {
           </div>
 
           <div>
-              <GroupByTitle employees={EMPLOYEE_DATA_BASE}/>
+              <GroupByTitle employees={employeeList} setEmployees={setEmployeeList}/>
           </div>
       </>
   )

@@ -1,6 +1,5 @@
-import type EmployeeCard from "../../dto/EmployeeCard.ts";
+import type {EmployeeCard} from "../../dto/EmployeeCard.ts";
 import {useMemo} from "react";
-
 
 function GroupByTitle({employees}: {employees: EmployeeCard[]}) {
     const groups = useMemo(() => {
