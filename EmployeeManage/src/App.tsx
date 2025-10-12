@@ -1,7 +1,7 @@
 
 import './App.css'
 import EmployeeList from "./components/employee-list/EmployeeList.tsx";
-import {createEmployeeCard, type EmployeeCard} from "./dto/EmployeeCard.ts";
+import {type EmployeeCard} from "./dto/EmployeeCard.ts";
 import EmployeeTable from "./components/employee-table/EmployeeTable.tsx";
 import * as React from "react";
 import searchService from "./components/search/utils.ts";
@@ -11,8 +11,6 @@ import {useCallback, useMemo} from "react";
 import QuickAdding from "./components/add-employee/QuickAdding.tsx";
 import DeleteAll from "./components/DeleteAll.tsx";
 import GroupByTitle from "./components/group-title/GroupByTitle.tsx";
-
-import EMPLOYEES from "./assets/EMPLOYEE_DATA_BASE.json";
 import AddEmployeeForm from "./components/add-employee/AddEmployeeForm.tsx";
 import employeeApi from "./services/employeeApi.ts";
 
@@ -24,27 +22,31 @@ function App() {
     const [hasSearched, setHasSearched] = React.useState<boolean>(false);
     const [filtered, setFiltered] = React.useState<string>("Tất cả");
     const [isVisible, setIsVisible] = React.useState(true);
-    // const [employeeList, setEmployeeList] = React.useState<EmployeeCard[]>([]);
+    const [employeeList, setEmployeeList] = React.useState<EmployeeCard[]>([]);
 
     const STORAGE_KEY = "employeeList";
 
-    const [employeeList, setEmployeeList] = React.useState<EmployeeCard[]>(() => {
-        const storedData = localStorage.getItem(STORAGE_KEY);
-
-        if (storedData) {
+    React.useEffect(() => {
+        const fetchEmployees = async () => {
             try {
-                const parsedData = JSON.parse(storedData);
-
-                if (Array.isArray(parsedData) && parsedData.length > 0) {
-                    return parsedData;
-                }
-            } catch (e) {
-                console.error(e);
+                const employees = await employeeApi.getEmployees();
+                setEmployeeList(employees);
+            } catch (error) {
+                console.error("failed: ", error);
             }
-        }
+        };
+        fetchEmployees();
+    }, []);
 
-        return EMPLOYEES;
-    });
+    const handleAddEmployee = useCallback(async (newEmployeeData: Omit<EmployeeCard, 'id' | 'code'>) => {
+        try {
+            console.log(newEmployeeData);
+            const newEmployeeFromApi = await employeeApi.addEmployee(newEmployeeData);
+            setEmployeeList(prevList => [...prevList, newEmployeeFromApi]);
+        } catch (error) {
+            console.error("Failed adding: ", error);
+        }
+    }, []);
 
     React.useEffect(() => {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(employeeList));
@@ -69,14 +71,6 @@ function App() {
             prevList.map(emp => (emp.id === updatedEmployee.id ? updatedEmployee : emp))
         );
     };
-
-    const handleAddEmployee = useCallback((newEmployeeData: Omit<EmployeeCard, 'id' | 'code'>) => {
-        setEmployeeList(prevList => {
-            // Tạo nhân viên mới với id và code duy nhất
-            const newEmployee = createEmployeeCard(newEmployeeData);
-            return [...prevList, newEmployee];
-        });
-    }, []);
 
   return (
       <>
