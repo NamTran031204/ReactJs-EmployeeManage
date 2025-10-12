@@ -1,4 +1,4 @@
-import {useCallback} from 'react';
+import {memo, useCallback} from 'react';
 import {createEmployeeCard, type EmployeeCard} from "../../dto/EmployeeCard.ts";
 import searchService from "../search/utils.ts";
 
@@ -7,7 +7,7 @@ interface QuíckAddingProps {
     setEmployeeList: (value: EmployeeCard[]) => void;
 }
 
-function QuickAdding({employeeList, setEmployeeList}: QuíckAddingProps) {
+const QuickAdding = memo(({employeeList, setEmployeeList}: QuíckAddingProps)=> {
 
     const handleAddEmployee = useCallback(() => {
         const newEmployee: EmployeeCard = createEmployeeCard({});
@@ -23,6 +23,6 @@ function QuickAdding({employeeList, setEmployeeList}: QuíckAddingProps) {
             </button>
         </>
     );
-}
+});
 
 export default QuickAdding;

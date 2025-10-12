@@ -1,7 +1,7 @@
 import type {EmployeeCard} from "../../dto/EmployeeCard.ts";
-import {useMemo} from "react";
+import {memo, useMemo} from "react";
 
-function GroupByTitle({employees}: {employees: EmployeeCard[]}) {
+const GroupByTitle = memo(({employees}: {employees: EmployeeCard[]}) => {
     const groups = useMemo(() => {
         const counts = new Map<string, number>();
         employees.forEach(employee => {
@@ -24,6 +24,6 @@ function GroupByTitle({employees}: {employees: EmployeeCard[]}) {
             </div>
         </>
     );
-}
+});
 
 export default GroupByTitle;

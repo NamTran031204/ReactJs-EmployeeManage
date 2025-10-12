@@ -1,6 +1,13 @@
 import type {EmployeeCard} from "../../dto/EmployeeCard.ts";
+import Employee from "../employee-card/Employee.tsx";
+import {memo} from "react";
 
-function EmployeeList({employees}: {employees: EmployeeCard[]}) {
+interface EmployeeListProps {
+    employees: EmployeeCard[];
+    onChange: (e: EmployeeCard) => void;
+}
+
+const EmployeeList = memo(({employees, onChange}: EmployeeListProps) => {
 
     return (
         <>
@@ -13,29 +20,8 @@ function EmployeeList({employees}: {employees: EmployeeCard[]}) {
                             </div>
                         )
                     : employees.map((employee: EmployeeCard) => {
-                        const bgColor = employee.title == "Manager"? "bg-yellow-100" : "bg-white";
                         return (
-                            <div key={employee.id} className={`${bgColor} p-5 shadow-md border border-gray-200 hover:shadow-xl hover:border-blue-500`}>
-                                <div className={"flex justify-between items-start"}>
-                                    <div>
-                                        <h2 className="text-xl font-bold text-gray-900">{employee.name}</h2>
-                                        <p className="text-gray-500 uppercase ">{employee.title}</p>
-                                    </div>
-                                    <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
-                                        No.{employee.code}
-                                    </span>
-                                </div>
-
-                                <hr className="my-4"/>
-                                <div className="space-y-2">
-                                    <p className="text-gray-700">
-                                        <span className="font-medium">Email: </span>{employee.email}
-                                    </p>
-                                    <p className="text-gray-700">
-                                        <span className="font-medium">SĐT: </span>{employee.phone}
-                                    </p>
-                                </div>
-                            </div>
+                            <Employee key={employee.id} employee={employee} onChange={onChange}/>
                         )
                     })
                 }
@@ -43,6 +29,6 @@ function EmployeeList({employees}: {employees: EmployeeCard[]}) {
         </>
 
     );
-}
+});
 
 export default EmployeeList;

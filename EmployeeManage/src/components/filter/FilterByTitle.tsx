@@ -1,10 +1,12 @@
+import {memo} from "react";
+
 interface FilterByTitleProps {
     filtered: string;
     setFiltered: (value: string) => void;
     uniqueTitles: string[];
 }
 
-function FilterByTitle({ filtered, setFiltered, uniqueTitles }: FilterByTitleProps) {
+const FilterByTitle = memo(({ filtered, setFiltered, uniqueTitles }: FilterByTitleProps)=>  {
     return (
         <div className="m-6 max-w-md ">
             <label htmlFor="title-filter" className="block mb-2 text-sm font-medium text-gray-900">Lọc theo chức vụ</label>
@@ -21,6 +23,6 @@ function FilterByTitle({ filtered, setFiltered, uniqueTitles }: FilterByTitlePro
             </select>
         </div>
     );
-}
+});
 
 export default FilterByTitle;

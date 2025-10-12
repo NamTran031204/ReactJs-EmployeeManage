@@ -1,6 +1,7 @@
 import * as React from "react";
 import type {EmployeeCard} from "../../dto/EmployeeCard.ts";
 import searchService from "./utils.ts";
+import {memo} from "react";
 
 interface SearchEngineProps {
     onSearch: string;
@@ -8,7 +9,7 @@ interface SearchEngineProps {
     onResults: (results: EmployeeCard[], hasSearched: boolean) => void;
 }
 
-export function SearchEngine({onSearch, setOnSearch, onResults}: SearchEngineProps) {
+const SearchEngine = memo(({onSearch, setOnSearch, onResults}: SearchEngineProps)=> {
 
     const onSearchChange= (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
@@ -62,6 +63,6 @@ export function SearchEngine({onSearch, setOnSearch, onResults}: SearchEnginePro
             </form>
         </>
     );
-}
+});
 
 export default SearchEngine;

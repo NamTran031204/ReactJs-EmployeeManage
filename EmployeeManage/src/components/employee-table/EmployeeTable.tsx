@@ -1,6 +1,7 @@
 import type {EmployeeCard} from "../../dto/EmployeeCard.ts";
+import {memo} from "react";
 
-function EmployeeTable({employees}: {employees:EmployeeCard[]}) {
+const EmployeeTable = memo(({employees}: {employees:EmployeeCard[]}) => {
     return (
     <>
         <div className={"text-blue-900 w-full align-middle uppercase font-bold m-6 text-xl"}>
@@ -61,6 +62,6 @@ function EmployeeTable({employees}: {employees:EmployeeCard[]}) {
     </>
 
     );
-}
+});
 
 export default EmployeeTable;

@@ -1,5 +1,5 @@
 import type {EmployeeCard} from "../../dto/EmployeeCard.ts";
-import {EMPLOYEE_DATA_BASE} from "../EMPLOYEE_DATA_BASE.ts"
+import EMPLOYEES from "../../assets/EMPLOYEE_DATA_BASE.json";
 
 export type SearchTree = Map<string, EmployeeCard[]>
 
@@ -18,6 +18,7 @@ function createNode(): RadixTreeNode {
 export class Utils {
 
     public searchTree: RadixTreeNode = createNode();
+    employees: EmployeeCard[] = EMPLOYEES;
 
     private normalizeText(text: string): string {
         return text
@@ -29,9 +30,10 @@ export class Utils {
             .trim();
     }
 
-    init () {
+    init (employees: EmployeeCard[]) {
+        this.employees = employees;
         const tree: RadixTreeNode = createNode();
-        const employeeList: EmployeeCard[] = EMPLOYEE_DATA_BASE;
+        const employeeList: EmployeeCard[] = employees;
         tree.employees = [...employeeList];
 
         for (const employee of employeeList) {
@@ -82,7 +84,7 @@ export class Utils {
 
 
     findName (name: string): EmployeeCard[] {
-        if (!name || name.trim() === '') return EMPLOYEE_DATA_BASE;
+        if (!name || name.trim() === '') return this.employees;
         let res: EmployeeCard[] = [];
 
         const normalizedName = (this.normalizeText(name)).split(/\s+/).filter(tu => tu.length > 0);
@@ -103,28 +105,6 @@ export class Utils {
         }
 
         return res;
-
-        // while (name !== null) {
-        //     const char = name.charAt(0);
-        //     if (char < 'a' || char > 'z') {
-        //         continue;
-        //     }
-        //     if (!tree.children.has(char)){
-        //         return [];
-        //     }
-        //
-        //     tree = tree.children.get(char)!;
-        //
-        //     const employees: EmployeeCard[] = tree.employees;
-        //
-        //     if (res === undefined) {
-        //         res = employees;
-        //     } else {
-        //         res.filter(employee => employees.includes(employee));
-        //     }
-        //
-        //     name = name.substring(1, name.length);
-        // }
 
     }
 
