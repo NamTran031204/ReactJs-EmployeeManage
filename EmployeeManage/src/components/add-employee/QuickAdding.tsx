@@ -1,24 +1,11 @@
-import {memo, useCallback} from 'react';
-import {createEmployeeCard, type EmployeeCard} from "../../dto/EmployeeCard.ts";
-import searchService from "../search/utils.ts";
+import {memo} from 'react';
+import {employeeStore} from "../../stores/EmployeeStore.ts";
 
-interface QuíckAddingProps {
-    employeeList: EmployeeCard[];
-    setEmployeeList: (value: EmployeeCard[]) => void;
-}
-
-const QuickAdding = memo(({employeeList, setEmployeeList}: QuíckAddingProps)=> {
-
-    const handleAddEmployee = useCallback(() => {
-        const newEmployee: EmployeeCard = createEmployeeCard({});
-        setEmployeeList([...employeeList, newEmployee]);
-
-        searchService.addEmployeeToTree(newEmployee);
-    }, [employeeList]);
+const QuickAdding = memo(()=> {
 
     return (
         <>
-            <button onClick={handleAddEmployee} className={"bg-gray-100 border-2 p-2 hover:shadow-xl hover:bg-amber-100"}>
+            <button onClick={() => employeeStore.addEmployee()} className={"bg-blue-200 rounded-xl p-1 hover:shadow-xl hover:bg-blue-400 align-middle"}>
                 Add new employee
             </button>
         </>

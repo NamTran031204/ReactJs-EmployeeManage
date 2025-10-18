@@ -8,7 +8,7 @@ interface FilterByTitleProps {
 
 const FilterByTitle = memo(({ filtered, setFiltered, uniqueTitles }: FilterByTitleProps)=>  {
     return (
-        <div className="m-6 max-w-md ">
+        <div className=" max-w-md ">
             <label htmlFor="title-filter" className="block mb-2 text-sm font-medium text-gray-900">Lọc theo chức vụ</label>
             <select
                 id="title-filter"

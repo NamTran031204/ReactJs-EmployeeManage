@@ -1,110 +1,100 @@
-import * as React from 'react';
-import { useState } from 'react';
-import type { EmployeeCard } from '../../dto/EmployeeCard.ts';
+import type { Employee } from '../../dto/Employee.ts';
+
+import {type FormProps} from 'antd';
+import { Button, Form, Input, Select } from 'antd';
+import QuickAdding from "./QuickAdding.tsx";
+
+const {Option} = Select;
 
 interface AddEmployeeFormProps {
-    onAddEmployee: (newEmployeeData: Omit<EmployeeCard, 'id' | 'code'>) => void;
+    onAddEmployee: (newEmployeeData: Omit<Employee, 'id' | 'code'>) => void;
 }
 
-interface FormErrors {
-    name?: string;
-    email?: string;
-}
+type FieldType = {
+    name: string;
+    email: string;
+    title: string;
+    phone: string;
+};
 
 const AddEmployeeForm = ({ onAddEmployee }: AddEmployeeFormProps) => {
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [title, setTitle] = useState('Frontend Dev');
-    const [phone, setPhone] = useState('');
-    const [errors, setErrors] = useState<FormErrors>({});
 
-    const validate = (): FormErrors => {
-        const newErrors: FormErrors = {};
-        if (!name.trim()) {
-            newErrors.name = 'Họ tên không được để trống.';
-        }
-        if (!email.includes('@')) {
-            newErrors.email = 'Email phải chứa ký tự @.';
-        }
-        return newErrors;
+    const [form] = Form.useForm();
+
+    const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
+        const dataToSend = {
+            ...values,
+            phone: values.phone || '',
+        };
+
+        onAddEmployee(dataToSend);
+        // message.success("Đã thêm nhân viên " + dataToSend.name + " !");
+        form.resetFields();
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        const validationErrors = validate();
-        if (Object.keys(validationErrors).length > 0) {
-            setErrors(validationErrors);
-            return;
-        }
-
-        onAddEmployee({ name, email, title, phone });
-
-        setName('');
-        setEmail('');
-        setPhone('');
-        setTitle('Frontend Dev');
-        setErrors({});
+    const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
+        console.log('Failed:', errorInfo);
     };
 
     return (
-        <form onSubmit={handleSubmit} className="p-6 my-4 border rounded-lg bg-white shadow-md w-full max-w-lg mx-auto text-left">
-            <h3 className="text-xl font-bold mb-4 text-gray-800">Thêm nhân viên mới</h3>
+        <Form
+            form={form}
+            name="basic"
+            labelCol={{ span: 8 }}
+            wrapperCol={{ span: 16 }}
+            style={{ maxWidth: 600 }}
+            initialValues={{title: "Front-end Dev", phone: ""}}
+            onFinish={onFinish}
+            onFinishFailed={onFinishFailed}
+            autoComplete="off"
+        >
+            <Form.Item<FieldType>
+                label="Name"
+                name="name"
+                rules={[{ required: true, message: 'Please input your name!' }]}
+            >
+                <Input />
+            </Form.Item>
 
-            <div className="mb-4">
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Họ tên</label>
-                <input
-                    type="text"
-                    id="name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className={`w-full p-2 border rounded-md ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
-                />
-                {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
-            </div>
+            <Form.Item<FieldType>
+                label="Email"
+                name="email"
+                rules={[{ required: true , type: 'email' }]}
+            >
+                <Input />
+            </Form.Item>
 
-            <div className="mb-4">
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input
-                    type="text"
-                    id="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className={`w-full p-2 border rounded-md ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
-                />
-                {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
-            </div>
+            <Form.Item<FieldType>
+                label="Title"
+                name="title"
+                rules={[{required: true}]}
+            >
+                <Select>
+                    <Option value="Front-end Dev">Front-end Dev</Option>
+                    <Option value="Backend Dev">Backend Dev</Option>
+                    <Option value="UI/UX Designer">UI/UX Designer</Option>
+                    <Option value="Manager">Manager</Option>
+                    <Option value="Intern">Intern</Option>
+                </Select>
 
-            <div className="mb-4">
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                <input
-                    type="text"
-                    id="phone"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className={`w-full p-2 border rounded-md 'border-gray-300'}`}
-                />
-            </div>
+            </Form.Item>
 
-            <div className="mb-6">
-                <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">Phòng ban</label>
-                <select
-                    id="title"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded-md"
-                >
-                    <option value="Frontend Dev">Frontend Dev</option>
-                    <option value="Backend Dev">Backend Dev</option>
-                    <option value="UI/UX Designer">UI/UX Designer</option>
-                    <option value="Manager">Manager</option>
-                    <option value="Intern">Intern</option>
-                </select>
-            </div>
+            <Form.Item<FieldType>
+                label="Phone"
+                name="phone"
+                rules={[]}
+            >
+                <Input />
+            </Form.Item>
 
-            <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition-colors">
-                Thêm nhân viên
-            </button>
-        </form>
+            <Form.Item label={null} style={{ gap: "2rem" }}>
+                <Button type="primary" htmlType="submit">
+                    Submit
+                </Button>
+            </Form.Item>
+
+            <QuickAdding/>
+        </Form>
     );
 };
 

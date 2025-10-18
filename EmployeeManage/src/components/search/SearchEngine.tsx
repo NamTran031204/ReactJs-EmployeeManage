@@ -1,44 +1,24 @@
 import * as React from "react";
-import type {EmployeeCard} from "../../dto/EmployeeCard.ts";
-import searchService from "./utils.ts";
-import {memo} from "react";
+import {observer} from "mobx-react-lite";
 
 interface SearchEngineProps {
     onSearch: string;
     setOnSearch: (value: string) => void;
-    onResults: (results: EmployeeCard[], hasSearched: boolean) => void;
 }
 
-const SearchEngine = memo(({onSearch, setOnSearch, onResults}: SearchEngineProps)=> {
+const SearchEngine = observer(({onSearch, setOnSearch}: SearchEngineProps)=> {
 
     const onSearchChange= (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        setOnSearch(value);
-
-        if (value.trim() === "") {
-            onResults([], false);
-        } else {
-            findEmployee(value);
-        }
+        setOnSearch(e.target.value);
     }
 
-    const findEmployee = (name: string) => {
-        onResults(searchService.findName(name),  true);
-    };
-
     const handleSearchSubmit = (e: React.FormEvent) => {
-        e.preventDefault(); // Ngăn form reload lại trang
-        if (onSearch.trim() !== "") {
-            findEmployee(onSearch);
-        } else {
-            // setHasSearched(false); // reset về trạng thái bình thường
-            onResults([], false);
-        }
+        e.preventDefault();
     };
 
     return (
         <>
-            <form className="max-w-md w-96 m-6" onSubmit={handleSearchSubmit}>
+            <form className="max-w-md w-96" onSubmit={handleSearchSubmit}>
                 <label htmlFor="default-search"
                        className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
                 <div className="relative">
@@ -56,7 +36,7 @@ const SearchEngine = memo(({onSearch, setOnSearch, onResults}: SearchEngineProps
                            className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-50 dark:border-gray-600 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
                            placeholder="Tìm kiếm tên, chức vụ, email,..." required/>
                     <button type="submit"
-                            className="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                            className="text-gray-50 absolute end-2.5 bottom-2.5 bg-blue-300 hover:bg-blue-400 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2"
                     >Search
                     </button>
                 </div>

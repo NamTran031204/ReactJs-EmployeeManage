@@ -1,11 +1,11 @@
-import type {EmployeeCard} from "../../dto/EmployeeCard.ts";
+import type {Employee} from "../../dto/Employee.ts";
 import EMPLOYEES from "../../assets/EMPLOYEE_DATA_BASE.json";
 
-export type SearchTree = Map<string, EmployeeCard[]>
+export type SearchTree = Map<string, Employee[]>
 
 export interface RadixTreeNode {
     children: Map<string, RadixTreeNode>;
-    employees: EmployeeCard[];
+    employees: Employee[];
 }
 
 function createNode(): RadixTreeNode {
@@ -18,7 +18,7 @@ function createNode(): RadixTreeNode {
 export class Utils {
 
     public searchTree: RadixTreeNode = createNode();
-    employees: EmployeeCard[] = EMPLOYEES;
+    employees: Employee[] = EMPLOYEES;
 
     private normalizeText(text: string): string {
         return text
@@ -30,10 +30,10 @@ export class Utils {
             .trim();
     }
 
-    init (employees: EmployeeCard[]) {
+    init (employees: Employee[]) {
         this.employees = employees;
         const tree: RadixTreeNode = createNode();
-        const employeeList: EmployeeCard[] = employees;
+        const employeeList: Employee[] = employees;
         tree.employees = [...employeeList];
 
         for (const employee of employeeList) {
@@ -57,9 +57,10 @@ export class Utils {
         }
 
         this.searchTree = tree;
+        console.log("init thành công");
     }
 
-    addEmployeeToTree (employee: EmployeeCard){
+    addEmployeeToTree (employee: Employee){
         const name = employee.name;
         if (!name || name.trim() === '') return;
         const normalizedName = (this.normalizeText(name)).split(/\s+/).filter(tu => tu.length > 0);
@@ -83,9 +84,9 @@ export class Utils {
     }
 
 
-    findName (name: string): EmployeeCard[] {
+    findName (name: string): Employee[] {
         if (!name || name.trim() === '') return this.employees;
-        let res: EmployeeCard[] = [];
+        let res: Employee[] = [];
 
         const normalizedName = (this.normalizeText(name)).split(/\s+/).filter(tu => tu.length > 0);
 
@@ -98,7 +99,7 @@ export class Utils {
 
                 tree = tree.children.get(char)!;
 
-                const employees: EmployeeCard[] = tree.employees;
+                const employees: Employee[] = tree.employees;
 
                 res = res.length === 0 ? employees : res.filter(e => employees.includes(e));
             }
@@ -106,6 +107,27 @@ export class Utils {
 
         return res;
 
+    }
+
+    updateEmployee (oldEmployee: Employee, newEmployee: Employee){
+        this.deleteEmployee(oldEmployee);
+        this.addEmployeeToTree(newEmployee);
+    }
+
+    deleteEmployee (employee: Employee){
+        const name = employee.name;
+        const tree = this.searchTree;
+        for (const tu of name) {
+            let currentNode = tree;
+            for (const char of tu) {
+                if (currentNode.children.has(char)){
+                    const deleteId = currentNode.employees.indexOf(employee);
+                    currentNode.employees.splice(deleteId, 1);
+                    currentNode = currentNode.children.get(char)!;
+                }
+            }
+        }
+        this.searchTree = tree;
     }
 
 

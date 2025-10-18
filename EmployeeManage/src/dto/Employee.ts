@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
-export interface EmployeeCard {
+export interface Employee {
     id: number | string;
     code: string;
     name: string;
@@ -9,7 +9,7 @@ export interface EmployeeCard {
     phone: string;
 }
 
-export function createEmployeeCard(initial: Partial<EmployeeCard>): EmployeeCard {
+export function createEmployee(initial: Partial<Employee>): Employee {
     return {
         id: !initial.id? uuidv4(): initial.id,
         code: !initial.code?`EMP000`: initial.code,

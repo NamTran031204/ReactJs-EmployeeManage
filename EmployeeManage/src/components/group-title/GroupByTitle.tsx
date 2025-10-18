@@ -1,7 +1,7 @@
-import type {EmployeeCard} from "../../dto/EmployeeCard.ts";
+import type {Employee} from "../../dto/Employee.ts";
 import {memo, useMemo} from "react";
 
-const GroupByTitle = memo(({employees}: {employees: EmployeeCard[]}) => {
+const GroupByTitle = memo(({employees}: {employees: Employee[]}) => {
     const groups = useMemo(() => {
         const counts = new Map<string, number>();
         employees.forEach(employee => {
@@ -13,14 +13,16 @@ const GroupByTitle = memo(({employees}: {employees: EmployeeCard[]}) => {
 
     return (
         <>
-            <div className="p-4 border rounded-lg bg-gray-50 w-96">
-                <h3 className="font-bold text-lg mb-2">Thống kê theo phòng ban/chức vụ</h3>
-                {Array.from(groups.entries()).map(([title, count]) => (
-                    <div key={title} className="flex justify-self-center">
-                        <span>{title}:</span>
-                        <strong>{count}</strong>
-                    </div>
-                ))}
+            <div>
+                <h3 className="font-bold text-lg mb-4 text-gray-700">Thống kê theo phòng ban</h3>
+                <div className="space-y-3">
+                    {Array.from(groups.entries()).map(([title, count]) => (
+                        <div key={title} className="flex justify-between items-center bg-gray-50 p-3 rounded-md">
+                            <span className="text-gray-600 font-medium">{title}:</span>
+                            <strong className="px-2 py-1 text-sm bg-blue-100 text-blue-800 rounded-full">{count}</strong>
+                        </div>
+                    ))}
+                </div>
             </div>
         </>
     );

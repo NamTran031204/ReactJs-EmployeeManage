@@ -1,15 +1,11 @@
-import type {EmployeeCard} from "../../dto/EmployeeCard.ts";
-import {memo} from "react";
+import type {Employee} from "../../dto/Employee.ts";
+import {observer} from "mobx-react-lite";
 
-const EmployeeTable = memo(({employees}: {employees:EmployeeCard[]}) => {
+const EmployeeTable = observer(({employees}: {employees:Employee[]}) => {
     return (
     <>
-        <div className={"text-blue-900 w-full align-middle uppercase font-bold m-6 text-xl"}>
+        <div className={"text-blue-900 w-full align-middle uppercase font-bold text-xl text-center"}>
             <h3>Bảng nhân viên</h3>
-        </div>
-
-        <div>
-
         </div>
 
         <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -34,7 +30,7 @@ const EmployeeTable = memo(({employees}: {employees:EmployeeCard[]}) => {
             </thead>
             <tbody className="divide-y divide-gray-200">
             {
-                employees.map ((employee: EmployeeCard) => {
+                employees.map ((employee: Employee) => {
                     return (
                         <tr key={employee.id} className="odd:bg-white odd:dark:bg-white
                                 even:bg-gray-50 even:dark:bg-blue-50 border-b dark:border-gray-700 border-gray-200 text-black">

@@ -1,8 +1,8 @@
-import type {EmployeeCard} from "../dto/EmployeeCard.ts";
+import type {Employee} from "../dto/Employee.ts";
 
 interface DeleteAllProps {
     // employees: EmployeeCard[];
-    setEmployees: (newEmployees: EmployeeCard[]) => void;
+    setEmployees: (newEmployees: Employee[]) => void;
 }
 
 function DeleteAll({setEmployees}: DeleteAllProps) {

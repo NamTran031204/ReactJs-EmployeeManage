@@ -1,124 +1,74 @@
 
 import './App.css'
-import EmployeeList from "./components/employee-list/EmployeeList.tsx";
-import {type EmployeeCard} from "./dto/EmployeeCard.ts";
-import EmployeeTable from "./components/employee-table/EmployeeTable.tsx";
 import * as React from "react";
-import searchService from "./components/search/utils.ts";
-import SearchEngine from "./components/search/SearchEngine.tsx";
-import FilterByTitle from "./components/filter/FilterByTitle.tsx";
-import {useCallback, useMemo} from "react";
-import QuickAdding from "./components/add-employee/QuickAdding.tsx";
-import DeleteAll from "./components/DeleteAll.tsx";
-import GroupByTitle from "./components/group-title/GroupByTitle.tsx";
-import AddEmployeeForm from "./components/add-employee/AddEmployeeForm.tsx";
-import employeeApi from "./services/employeeApi.ts";
+
+import {Link, Outlet, useLocation} from 'react-router-dom';
+import {Spin} from 'antd';
+import {employeeStore} from "./stores/EmployeeStore.ts";
+import {observer} from "mobx-react-lite";
 
 
-function App() {
 
-    const [onSearch, setOnSearch] = React.useState<string>("");
-    const [foundObject, setFoundObject] = React.useState<EmployeeCard[]>([]);
-    const [hasSearched, setHasSearched] = React.useState<boolean>(false);
-    const [filtered, setFiltered] = React.useState<string>("Tất cả");
-    const [isVisible, setIsVisible] = React.useState(true);
-    const [employeeList, setEmployeeList] = React.useState<EmployeeCard[]>([]);
+const App = observer(()=>  {
 
-    const STORAGE_KEY = "employeeList";
+    const location = useLocation();
 
     React.useEffect(() => {
-        const fetchEmployees = async () => {
-            try {
-                const employees = await employeeApi.getEmployees();
-                setEmployeeList(employees);
-            } catch (error) {
-                console.error("failed: ", error);
-            }
-        };
-        fetchEmployees();
+        employeeStore.fetchEmployees();
     }, []);
 
-    const handleAddEmployee = useCallback(async (newEmployeeData: Omit<EmployeeCard, 'id' | 'code'>) => {
-        try {
-            console.log(newEmployeeData);
-            const newEmployeeFromApi = await employeeApi.addEmployee(newEmployeeData);
-            setEmployeeList(prevList => [...prevList, newEmployeeFromApi]);
-        } catch (error) {
-            console.error("Failed adding: ", error);
-        }
-    }, []);
+    const menuItems = [
+        { key: '/', label: 'TRANG CHỦ' },
+        { key: '/list', label: 'DANH SÁCH NHÂN VIÊN' },
+        { key: '/table', label: 'BẢNG NHÂN VIÊN' },
+        { key: '/add', label: 'THÊM NHÂN VIÊN' },
+    ];
 
-    React.useEffect(() => {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(employeeList));
-    }, [employeeList]);
+    return (
+        <div className="flex h-screen w-full bg-gray-100">
+            <aside className="w-1/5 bg-[#0092bd] text-white flex flex-col">
+                <div className="h-16 flex items-center justify-center text-xl font-bold border-b border-blue-400">
+                    <img src="/logo.svg" alt="logo" className="h-8 w-8 mr-4" />
+                </div>
+                <nav className="flex-grow">
+                    <ul>
+                        {menuItems.map(item => (
+                            <li key={item.key}>
+                                <Link
+                                    to={item.key}
+                                    className={`block w-full h-20 px-4 py-3 transition-colors text-center justify-items-center
+                                        ${location.pathname === item.key
+                                        ? 'bg-[#0068c8]'
+                                        : 'hover:bg-[#007fcb]'
+                                    }`
+                                    }
+                                >
+                                    {item.label}
+                                </Link>
+                            </li>
+                        ))}
+                    </ul>
+                </nav>
+            </aside>
 
-    React.useEffect(() => {
-        searchService.init(employeeList);
-        console.log("init");
-    }, [employeeList]);
+            <div className="w-4/5 flex flex-col">
+                {/* Header */}
+                <header className="h-16 bg-[#4149b2] text-white flex items-center px-6 shadow-md z-10">
+                    <h1 className="text-xl font-semibold text-shadow-amber-900">React Management</h1>
+                </header>
 
-    const finalEmployeeList: EmployeeCard[] = useMemo(()=>{
-        return (hasSearched ? foundObject : employeeList)
-            .filter((employee: EmployeeCard) => {
-                return filtered===''||filtered === "Tất cả"?true:employee.title == filtered})
-    }, [hasSearched, foundObject, employeeList, filtered])
-
-    const uniqueTitles = [...new Set(employeeList.map(emp => emp.title))];
-    const countNumberOfEmployee: number = finalEmployeeList.length;
-
-    const handleUpdateEmployee = (updatedEmployee: EmployeeCard) => {
-        setEmployeeList(prevList =>
-            prevList.map(emp => (emp.id === updatedEmployee.id ? updatedEmployee : emp))
-        );
-    };
-
-  return (
-      <>
-          <div className={'p-5 min-h-auto'}>
-              <h1 className={'text-3xl font-bold mb-6'}>
-                  Danh sách nhân viên
-              </h1>
-          </div>
-
-          <div>
-              <p>Tổng số nhân viên: <strong>{countNumberOfEmployee}</strong></p>
-              <QuickAdding employeeList={employeeList} setEmployeeList={setEmployeeList}/>
-          </div>
-
-          <div className={'flex flex-row justify-between gap-4 max-h-96 overflow-y-auto'}>
-              <SearchEngine onSearch={onSearch} setOnSearch={setOnSearch} onResults={(results, searched) => {
-                  setFoundObject(results);
-                  setHasSearched(searched);
-              }}/>
-
-              <FilterByTitle filtered={filtered} setFiltered={setFiltered} uniqueTitles={uniqueTitles}/>
-          </div>
-
-          <div >
-              <button onClick={() => setIsVisible(!isVisible)} className={"border bg-gray-100 hover:bg-amber-100"} >Ẩn danh sách</button>
-          </div>
-
-          {isVisible? (<div className={'flex flex-col gap-8 m-2'}>
-              <div className={'p-8 bg-gray-100 min-h-48 border-b-blue-400 rounded-2xl'}>
-                  <EmployeeList employees={finalEmployeeList} onChange={handleUpdateEmployee}/>
-              </div>
-
-              <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-                  <EmployeeTable employees={finalEmployeeList}/>
-              </div>
-          </div>): <></>}
-
-          <div>
-              <DeleteAll setEmployees={setEmployeeList}/>
-          </div>
-
-          <div>
-              <GroupByTitle employees={employeeList}/>
-          </div>
-
-          <AddEmployeeForm onAddEmployee={handleAddEmployee} />
-      </>
-  )
-}
+                <main className="flex-1 p-6 bg-[#f3f4fc] overflow-y-auto">
+                    {employeeStore.isLoading ? (
+                        <div className="w-full h-full flex justify-center items-center">
+                            <Spin size="large" />
+                        </div>
+                    ) : (
+                        <Outlet />
+                    )}
+                </main>
+            </div>
+        </div>
+    );
+});
 
 export default App
